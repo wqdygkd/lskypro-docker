@@ -1,0 +1,46 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7.22
+    restart: always
+    hostname: mysql
+    container_name: mysql
+    # 修改加密规则
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+    - "9306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - mysql-conf:/etc/mysql
+      - mysql-log:/var/log/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    networks:
+      - mysql-net
+
+  lskypro:
+    # build:
+    #   # 指定dockerfile文件的所在路径
+    #   context: ./lskypro
+    #   # 指定Dockerfile文件名称
+    #   dockerfile: Dockerfile
+    image: lskypro:latest
+    restart: always
+    hostname: lskypro
+    container_name: lskypro
+    ports:
+      - "9080:80"
+    volumes:
+      - lsky-data:/var/www/html
+    networks:
+      - mysql-net
+
+volumes:
+  mysql-data:
+  mysql-conf:
+  mysql-log:
+  lsky-data:
+
+networks:
+  mysql-net:
